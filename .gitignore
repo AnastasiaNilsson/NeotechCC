@@ -4,6 +4,9 @@
 ## Get latest from `dotnet new gitignore`
 
 
+# Google Credentials
+google-credentials.json
+
 # dotenv files
 .env
 

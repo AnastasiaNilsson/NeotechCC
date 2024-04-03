@@ -1,45 +1,46 @@
-using System.Linq;
-using System.Collections.Generic;
 
 namespace API;
 
-public class Tag
+public class Tag (int id, TagCategory category, string englishName, string swedishName, string englishDescription, string swedishDescription) : INeotechEdge
 {
-    private readonly string _englishName;
-    private readonly string _swedishhName;
-    private readonly string _englishDescription;
-    private readonly string _swedisgDescription;
+    public int Id { get; } = id;
+    public TagCategory Category { get; } = category;
+    public string EnglishName { get; } = englishName;
+    public string SwedishhName { get; } = swedishName;
+    public string EnglishDescription { get; } = englishDescription;
+    public string SwedishDescription { get; } = swedishDescription;
     
-    public Guid Id { get; } = Guid.NewGuid();
-    public TagCategory Category { get; }
-
-    public Tag(string enName, string seName, string enDesc, string seDesc, TagCategory category)
+    public static INeotechEdge CreateFromGoogleData(Dictionary<string, string> data)
     {
-        _englishName = enName;
-        _swedishhName = seName;
-        _englishDescription = enDesc;
-        _swedisgDescription = seDesc;
-        Category = category;
+        var isValidCategory = Enum.TryParse<TagCategory>(data["Category"], out var category);
+        if (!isValidCategory) throw new ArgumentException($"Invalid tag category '{data["Category"]}' found. Unable to create tag with id {data["UUID"]}");
+
+        var isInteger = int.TryParse(data["UUID"], out var id);
+        if (!isInteger) throw new ArgumentException($"Invalid tag UUID '{data["UUID"]}' found. Value is not an integer.");
+
+        var englishName = data["English Name"];
+        var swedishName = data["Swedish Name"];
+        var englishDescription = data["English Description"];
+        var swedishDescription = data["Swedish Description"];
+        
+        return new Tag(id, category, englishName, swedishName, englishDescription, swedishDescription);
     }
 
     public TagDTO ToDTO(Localisation localisation)
     {
         var inEnglish = localisation == Localisation.EN;
-        var localisedName = inEnglish ? _englishName : _swedishhName;
-        var localisedDescriotion = inEnglish ? _englishDescription : _swedisgDescription;
+        var localisedName = inEnglish ? EnglishName : SwedishhName;
+        var localisedDescriotion = inEnglish ? EnglishDescription : SwedishDescription;
         var localisedCategory = inEnglish ? Category.ToLocalisedString(Localisation.EN) : Category.ToLocalisedString(Localisation.SE);
 
-        return new TagDTO() 
-        {
-            Name = localisedName, Description = localisedDescriotion, Category = localisedCategory, Id = Id
-        };
+        return new TagDTO(localisedName, localisedCategory, localisedDescriotion, id);
     }
 
     public static List<Tag> ExampleTags { get; } = new List<Tag>()
     {
-        new Tag(enName: "#4Kidz", seName: "#4Kidz", enDesc: "The eqip is colourful", seDesc: "Eqipen är färgglad", category: TagCategory.General),
-        new Tag(enName: "#Employable+x", seName: "#Anställningsbar+x", enDesc: "You are extremely employable for some bomba reason.", seDesc: "Du är extremt anställningsbar av någon bomba anledning.", category: TagCategory.General),
-        new Tag(enName: "#Load+x", seName: "#Last+x", enDesc: "The auton can carry x kgs for you.", seDesc: "Autonen kan bära x kg åt dig", category: TagCategory.Auton)
+        new Tag(id: 1, englishName: "#4Kidz", swedishName: "#4Kidz", englishDescription: "The eqip is colourful", swedishDescription: "Eqipen är färgglad", category: TagCategory.General),
+        new Tag(id: 2, englishName: "#Employable+x", swedishName: "#Anställningsbar+x", englishDescription: "You are extremely employable for some bomba reason.", swedishDescription: "Du är extremt anställningsbar av någon bomba anledning.", category: TagCategory.General),
+        new Tag(id: 3, englishName: "#Load+x", swedishName: "#Last+x", englishDescription: "The auton can carry x kgs for you.", swedishDescription: "Autonen kan bära x kg åt dig", category: TagCategory.Auton)
     };
     public static List<TagDTO> ExampleDTOs(Localisation localisation) => ExampleTags.Select(tag => tag.ToDTO(localisation)).ToList();
 }

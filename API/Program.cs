@@ -1,11 +1,20 @@
+using API;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddSingleton(typeof(GoogleApiClient));
+builder.Services.AddSingleton(typeof(GoogleSheets));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(o => o.AddPolicy("Neotech", builder =>
+{
+    builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+}));
 
 var app = builder.Build();
 
@@ -17,9 +26,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+app.UseCors("Neotech");
 
 app.Run();
+
+public partial class Program
+{
+    public static List<Tag> AllTags { get; set; } = new List<Tag>();
+}

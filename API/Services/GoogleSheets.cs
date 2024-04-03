@@ -19,7 +19,7 @@ public class GoogleSheets
         return response.Values;
     }
 
-    public async Task<List<T>> RefreshDataOfType<T>() where T : NeotechEdgeType
+    public async Task<List<T>> RefreshDataOfType<T>() where T : INeotechEdge
     {
         var sheet = await GetSheetAsync(typeof(T).Name + "s");
         var headers = sheet.Take(1).ElementAt(0);
