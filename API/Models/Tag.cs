@@ -35,12 +35,4 @@ public class Tag (int id, TagCategory category, string englishName, string swedi
 
         return new TagDTO(localisedName, localisedCategory, localisedDescriotion, id);
     }
-
-    public static List<Tag> ExampleTags { get; } = new List<Tag>()
-    {
-        new Tag(id: 1, englishName: "#4Kidz", swedishName: "#4Kidz", englishDescription: "The eqip is colourful", swedishDescription: "Eqipen är färgglad", category: TagCategory.General),
-        new Tag(id: 2, englishName: "#Employable+x", swedishName: "#Anställningsbar+x", englishDescription: "You are extremely employable for some bomba reason.", swedishDescription: "Du är extremt anställningsbar av någon bomba anledning.", category: TagCategory.General),
-        new Tag(id: 3, englishName: "#Load+x", swedishName: "#Last+x", englishDescription: "The auton can carry x kgs for you.", swedishDescription: "Autonen kan bära x kg åt dig", category: TagCategory.Auton)
-    };
-    public static List<TagDTO> ExampleDTOs(Localisation localisation) => ExampleTags.Select(tag => tag.ToDTO(localisation)).ToList();
 }
